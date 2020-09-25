@@ -312,8 +312,8 @@ export const stringToPublicKey = (s: string): Key => {
     if (typeof s !== 'string') {
         throw new Error('expected string containing public key');
     }
-    if (s.substr(0, 3) === 'FS') {
-        const whole = base58ToBinary(publicKeyDataSize + 4, s.substr(3));
+    if (s.substr(0, 2) === 'FS') {
+        const whole = base58ToBinary(publicKeyDataSize + 4, s.substr(2));
         const key = { type: KeyType.k1, data: new Uint8Array(publicKeyDataSize) };
         for (let i = 0; i < publicKeyDataSize; ++i) {
             key.data[i] = whole[i];
@@ -363,7 +363,7 @@ export const publicKeyToString = (key: Key) => {
  * Leaves other formats untouched
  */
 export const convertLegacyPublicKey = (s: string) => {
-    if (s.substr(0, 3) === 'FS') {
+    if (s.substr(0, 2) === 'FS') {
         return publicKeyToString(stringToPublicKey(s));
     }
     return s;

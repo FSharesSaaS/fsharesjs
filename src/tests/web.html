@@ -6,7 +6,7 @@
         <script src='../../dist-web/eosjs-jsonrpc.min.js'></script>
         <script src='../../dist-web/eosjs-jssig.min.js'></script>
         <script>
-            const privateKey = '5JuH9fCXmU3xbj8nRmhPZaVrxxXrdPaRmZLW1cznNTmTQR2Kg5Z'; // replace with 'bob' account private key
+            const privateKey = '5JmufNc1ptrbpiho52hxFQQB6GtBg2eZBypuW5j6Z2ywwd6Xrwr'; // replace with 'sys.resad' account private key
             const r1PrivateKey = 'PVT_R1_GrfEfbv5at9kbeHcGagQmvbFLdm6jqEpgE1wsGbrfbZNjpVgT'
             /* new accounts for testing can be created by unlocking a cleos wallet then calling: 
             * 1) cleos create key --to-console (copy this privateKey & publicKey)
@@ -15,17 +15,17 @@
             * 4) cleos create account alice publicKey
             */
         
-            const rpc = new eosjs_jsonrpc.JsonRpc('http://localhost:8888');
-            const signatureProvider = new eosjs_jssig.JsSignatureProvider([privateKey, r1PrivateKey]);
+            const rpc = new eosjs_jsonrpc.JsonRpc('http://newbit-chain.valicn.com');
+            const signatureProvider = new eosjs_jssig.JsSignatureProvider([privateKey]);
             const api = new eosjs_api.Api({ rpc, signatureProvider });
         
             const EXECUTING = 'Executing Test', SUCCESS = 'Success', FAILED = 'Failed';
             let resultsLabel, transactionResponse, transactionSignatures, failedAsPlanned;
 
-            const transactWithConfig = async (config, memo, from = 'bob', to = 'alice') => {
+            const transactWithConfig = async (config, memo, from = 'sys.resad', to = 'sys.auth') => {
               return api.transact({
                 actions: [{
-                  account: 'eosio.token',
+                  account: 'sys.token',
                   name: 'transfer',
                   authorization: [{
                     actor: from,
@@ -34,7 +34,7 @@
                   data: {
                     from,
                     to,
-                    quantity: '0.0001 SYS',
+                    quantity: '0.00000001 RES',
                     memo,
                   },
                 }]
@@ -100,16 +100,16 @@
                     ref_block_num: blockInfo.block_num & 0xffff,
                     ref_block_prefix: blockInfo.ref_block_prefix,
                     actions: [{
-                        account: 'eosio.token',
+                        account: 'sys.token',
                         name: 'transfer',
                         authorization: [{
-                            actor: 'bob',
+                            actor: 'sys.resad',
                             permission: 'active',
                         }],
                         data: {
-                            from: 'bob',
-                            to: 'alice',
-                            quantity: '0.0001 SYS',
+                            from: 'sys.resad',
+                            to: 'sys.auth',
+                            quantity: '0.00000001 RES',
                             memo: 'transactWithoutConfig2',
                         },
                     }]
@@ -219,7 +219,7 @@
               resultsLabel.innerText = EXECUTING;
 
               try {
-                transactionResponse = await transactWithConfig({ blocksBehind: 3, expireSeconds: 30 }, 'transactWithR1KeySignature', 'bobr1', 'alicer1');
+                transactionResponse = await transactWithConfig({ blocksBehind: 3, expireSeconds: 30 }, 'transactWithR1KeySignature', 'sys.resad', 'sys.auth');
               } catch (error) {
                 resultsLabel.className = 'failed';
                 resultsLabel.innerText = FAILED;
@@ -239,16 +239,16 @@
         
             const transactShouldFail = async () => await api.transact({
                 actions: [{
-                    account: 'eosio.token',
+                    account: 'sys.token',
                     name: 'transfer',
                     authorization: [{
-                        actor: 'bob',
+                        actor: 'sys.resad',
                         permission: 'active',
                     }],
                     data: {
-                        from: 'bob',
-                        to: 'alice',
-                        quantity: '0.0001 SYS',
+                        from: 'sys.resad',
+                        to: 'sys.auth',
+                        quantity: '0.00000001 RES',
                         memo: '',
                     },
                 }]
